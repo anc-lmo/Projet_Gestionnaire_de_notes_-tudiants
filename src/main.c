@@ -644,3 +644,317 @@ void lecture_notes(int identifiant,double *tableau_de_notes)
     }
 }
 
+double creation_d_identifiant(char *nom, char *prenom, int annee_etude)
+{
+    double identifiant=0;
+    int a=(int)prenom[0];
+    int b=(int)prenom[2];
+    int c=(int)nom[0];
+    int d=(int)nom[2];
+    while (a>=100)
+    {
+        a=(int)(a/2);
+    }
+    while (b>=100)
+    {
+        b=(int)(b/2);
+    }
+    while (c>=100)
+    {
+        c=(int)(c/2);
+    }
+    while (d>=100)
+    {
+        d=(int)(d/2);
+    }
+    
+    identifiant= annee_etude*1000000000 + a + b*100 + c*10000 + d*1000000;
+    return identifiant;
+}
+void recherche_etudiant(double identifiant_etudiant,char *etudiant)
+{
+    FILE *fichier=fopen("donnee.txt","r");
+    int nbre=nombre_de_ligne_identifiant(),compteur=0;
+    char ligne[101],identifiant[12];
+    if (fichier==NULL)
+    {
+        perror("\nErreur lors de l'ouverture d'un fichier !");
+        exit(0);
+    }
+    for (int i = 0; i < nbre; i++)
+    {
+        compteur=0;
+        fgets(ligne,101,fichier);
+        supprimer_un_caractere_specifique_dans_une_chaine('\n',ligne);
+        // cette boucle sert a rechercher l'identifiant dans la ligne lue
+        int len=strlen(ligne);
+        for (int j = 0; j < len; j++)
+        {
+            
+            if (ligne[j]=='*')
+            {
+                compteur++;
+                if (compteur==3)
+                {
+                    int l=0;
+                    for (int k = j+1; k<len-1; k++)
+                    {
+                        identifiant[l]=ligne[k];
+                        l++;
+                    }
+                    identifiant[l]='\0';
+                    break;
+                }
+            }
+            
+        }
+        // bon, a partir de cette ligne, on a l'identifiant en main
+        // on le met d'abord dans une variable de type double parceque pour le moment, il est char
+        double identifiant_lu=0;
+        char *end=NULL;
+
+        identifiant_lu=strtod(identifiant,&end);
+        if (fabs(identifiant_lu-identifiant_etudiant)<1)
+        {
+            compteur=0;
+            // si ce si est verifie c quon a trouve l'etudiant dont l'identifiant est en parametre de fonction
+            char etudiant_trouve[101];
+            int repere=0;
+            // cette boucle permet de prendre le nom et le prenom sans les asteris au milieu
+            for (int i = 0 ; i < strlen(ligne) ; i++)
+            {
+                if (ligne[i]!='*')
+                {
+                    if (repere==0)
+                    {
+                        etudiant_trouve[i]=ligne[i];
+                    }
+                    else if(repere==1)
+                    {
+                        etudiant_trouve[i]=ligne[i];
+                    }
+                    else
+                    {
+                        etudiant_trouve[i]='\0';
+                        break;
+                    }
+                }
+                else
+                {
+                    repere++;
+                    etudiant_trouve[i]=' ';
+                }
+            }
+            
+            strcpy(etudiant,etudiant_trouve);
+        }
+    }
+    fclose(fichier);
+}
+int nombre_de_ligne_moyenne1()
+{
+    int nbre=0;
+    FILE *fichier=fopen("moyenne1.txt","r");
+    if (fichier==NULL)
+    {
+        perror("\nOuverture lors de l'ouverture d'un fichier !");
+        return 1;
+    }
+    char caractere_de_comptage=0;
+    do
+    {
+        caractere_de_comptage=getc(fichier);
+        if (caractere_de_comptage=='\n')
+        {
+            nbre++;
+        }
+    } while (caractere_de_comptage!=EOF);
+    fclose(fichier);
+    return nbre;
+}
+int nombre_de_ligne_moyenne2()
+{
+    int nbre=0;
+    FILE *fichier=fopen("moyenne2.txt","r");
+    if (fichier==NULL)
+    {
+        perror("\nOuverture lors de l'ouverture d'un fichier !");
+        return 1;
+    }
+    char caractere_de_comptage=0;
+    do
+    {
+        caractere_de_comptage=getc(fichier);
+        if (caractere_de_comptage=='\n')
+        {
+            nbre++;
+        }
+    } while (caractere_de_comptage!=EOF);
+    fclose(fichier);
+    return nbre;
+} 
+
+void classement()
+{
+    // cette fonction fait le classement des etudiants en prenants en compte leurs moyenne uniquement
+    // ce qui veut dire que si la moyenne d'un etudiant n'a pas encore ete calcule, le classements se fera sans lui
+    printf("\n1ere annee !");
+    int nbre_line=nombre_de_ligne_moyenne1();
+    double tableau_note_identifiant[nbre_line][2];
+    FILE *fichier=fopen("moyenne1.txt","r");
+    if (fichier==NULL)
+    {
+        perror("\nErreur d'ouverture d'un fichier !");
+    }
+    char ligne[101];
+    for (int i = 0; i < nbre_line; i++)
+    {
+        int repere=0;
+        // la variable repere va me servir pour lire la ligne : voyons voir comment je fais cela :-)
+        fgets(ligne,101,fichier);
+        char id[12];
+        char moy[6];
+        char *end=NULL;
+        int k=0;
+        for (int j = 0; j < strlen(ligne); j++)
+        {
+            if (repere==1)
+            {
+                moy[k]=ligne[j];
+                k++;
+            }
+            else if(ligne[j]!='*' && repere==0)
+            {
+                id[j]=ligne[j];
+            }
+            else if(ligne[j]=='*')
+            {
+                repere=1;
+                // repere=1 va me permettre de ne plus entrer dans le if precedent mais pas la meme me permettre d'entrer le premier
+            }
+        }
+        tableau_note_identifiant[i][0]=strtod(id,&end);
+        tableau_note_identifiant[i][1]=strtod(moy,&end);
+    }
+    fclose(fichier);
+    // bon a partir de cette ligne on a la liste de tout les identifiants avec les moyennes deja calcule
+    // on passe au classements
+
+    double moyenne_id_range[nbre_line][2];
+
+    // on fait la petite boucle classique imbriquee (for dans for) pour le rangement
+    
+    for (int i = 0; i < nbre_line; i++)
+    {
+        int repere=0;
+        double maj=0;
+        for (int j = 0; j < nbre_line; j++)
+        {
+            if(maj<tableau_note_identifiant[j][1])
+            {
+                maj=tableau_note_identifiant[j][1];
+                repere=j;
+            }
+        }
+        moyenne_id_range[i][1]=maj;
+        tableau_note_identifiant[repere][1]=0;
+        moyenne_id_range[i][0]=tableau_note_identifiant[repere][0];
+    }
+
+    // a la fin de cette boucle, les moyennes et les identifiants doivent se retrouver en ordre decroissant dans le double moyenne_id_range
+
+    for (int i = 0; i < nbre_line; i++)
+    {
+        char etudiant[101];
+        recherche_etudiant(moyenne_id_range[i][0],etudiant);
+        pause(900);
+        if(i==0)
+        {
+            printf("\n\t1er => %s avec %.2lf de moyenne. ",etudiant,moyenne_id_range[i][1]);
+        }
+        else
+        {
+            printf("\n\t%deme => %s avec %.2lf de moyenne. ",i+1,etudiant,moyenne_id_range[i][1]);
+        }
+    }
+
+    printf("\n2eme annee !");
+    nbre_line=nombre_de_ligne_moyenne2();
+    double tableau_note_identifiant_2[nbre_line][2];
+    FILE *fichier1=fopen("moyenne2.txt","r");
+    if (fichier1==NULL)
+    {
+        perror("\nErreur d'ouverture d'un fichier !");
+    }
+    for (int i = 0; i < nbre_line; i++)
+    {
+        int repere=0;
+        // la variable repere va me servir pour lire la ligne : voyons voir comment je fais cela :-)
+        fgets(ligne,101,fichier1);
+        char id[12];
+        char moy[6];
+        char *end=NULL;
+        int k=0;
+        for (int j = 0; j < strlen(ligne); j++)
+        {
+            if (repere==1)
+            {
+                moy[k]=ligne[j];
+                k++;
+            }
+            else if(ligne[j]!='*' && repere==0)
+            {
+                id[j]=ligne[j];
+            }
+            else if(ligne[j]=='*')
+            {
+                repere=1;
+                // repere=1 va me permettre de ne plus entrer dans le if precedent mais pas la meme me permettre d'entrer le premier
+            }
+        }
+        tableau_note_identifiant_2[i][0]=strtod(id,&end);
+        tableau_note_identifiant_2[i][1]=strtod(moy,&end);
+    }
+    fclose(fichier1);
+    // bon a partir de cette ligne on a la liste de tout les identifiants avec les moyennes deja calcule
+    // on passe au classements
+
+    double moyenne_id_range_2[nbre_line][2];
+
+    // on fait la petite boucle classique imbriquee (for dans for) pour le rangement
+    
+    for (int i = 0; i < nbre_line; i++)
+    {
+        int repere=0;
+        double maj=0;
+        for (int j = 0; j < nbre_line; j++)
+        {
+            if(maj<tableau_note_identifiant_2[j][1])
+            {
+                maj=tableau_note_identifiant_2[j][1];
+                repere=j;
+            }
+        }
+        moyenne_id_range_2[i][1]=maj;
+        tableau_note_identifiant_2[repere][1]=0;
+        moyenne_id_range_2[i][0]=tableau_note_identifiant_2[repere][0];
+    }
+
+    // a la fin de cette boucle, les moyennes et les identifiants doivent se retrouver en ordre decroissant dans le double moyenne_id_range
+
+    for (int i = 0; i < nbre_line; i++)
+    {
+        char etudiant[101];
+        recherche_etudiant(moyenne_id_range_2[i][0],etudiant);
+        pause(900);
+        if(i==0)
+        {
+            printf("\n\t1er => %s avec %.2lf de moyenne. ",etudiant,moyenne_id_range_2[i][1]);
+        }
+        else
+        {
+            printf("\n\t%deme => %s avec %.2lf de moyenne. ",i+1,etudiant,moyenne_id_range_2[i][1]);
+        }
+    }
+}
+

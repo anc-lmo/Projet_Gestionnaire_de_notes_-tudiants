@@ -1164,4 +1164,157 @@ int nombre_de_ligne_notes()
     fclose(fichier);
     return nbre;
 }
+// A PARTIR D'ICI, CE SONT LES FONCTIONS DE NAWAL
 
+int nombre_de_ligne_identifiant()
+{
+    int nbre=0;
+    FILE *fichier=fopen("identifiant.txt","r");
+    if (fichier==NULL)
+    {
+        perror("\nOuverture lors de l'ouverture d'un fichier !");
+        return 1;
+    }
+    char caractere_de_comptage=0;
+    do
+    {
+        caractere_de_comptage=getc(fichier);
+        if (caractere_de_comptage=='\n')
+        {
+            nbre++;
+        }
+    } while (caractere_de_comptage!=EOF);
+    fclose(fichier);
+    return nbre;
+}
+void supprimer_un_caractere_specifique_dans_une_chaine(char a, char *chaine)
+{
+    for (int i = 0; i < strlen(chaine); i++)
+    {
+        if (chaine[i]==a)
+        {
+            chaine[i]='\0';
+            break;
+        }
+        
+    }
+    
+}
+
+int verification_notes(double identifiant)
+{
+    // cette fonction prend en parametre un identifiant et verifie si ces notes ont deja ete enregistre
+
+    int reussite=0,nbre=nombre_de_ligne_notes();
+    char ligne[101];
+    double identifiant_de_verification=0;
+    FILE *fichier=fopen("notes.txt","r");
+    if (fichier==NULL)
+    {
+        printf("\nOuverture d'un fichier impossible !");
+        return 2;
+    }
+    
+    for (int i = 0; i < nbre; i++)
+    {
+        fgets(ligne,101,fichier);
+        
+        supprimer_un_caractere_specifique_dans_une_chaine('\n',ligne);
+        char *end=NULL;
+        char id[15];
+        // cette variable id va me permettre de prendre l'identifiant seul etant donne que dans ligne, c l'identifiant et les notes
+        // pour cela, j'entre dans une boucle for
+        for (int i = 0; i < 11; i++)
+        {
+            id[i]=ligne[i];
+        }
+        identifiant_de_verification=strtod(id,&end);
+        if (fabs(identifiant-identifiant_de_verification)<1)
+        {
+            reussite=1;
+            break;
+        }
+    }
+    
+    fclose(fichier);
+    return reussite;
+}
+
+int verification_calcul_moyenne(double identifiant)
+{
+    // cette fonction prend en parametre un identifiant et verifie si sa moyenne a deja ete calcule
+    if (annee(identifiant)==1)
+    {
+        int reussite=0,nbre=nombre_de_ligne_moyenne1();
+        char ligne[101];
+        double identifiant_de_verification=0;
+        FILE *fichier=fopen("moyenne1.txt","r");
+        if (fichier==NULL)
+        {
+            printf("\nOuverture d'un fichier impossible !");
+            return 2;
+        }
+        
+        for (int i = 0; i < nbre; i++)
+        {
+            fgets(ligne,101,fichier);
+            
+            supprimer_un_caractere_specifique_dans_une_chaine('\n',ligne);
+            char *end=NULL;
+            char id[15];
+            // cette variable id va me permettre de prendre l'identifiant seul etant donne que dans ligne, c l'identifiant et les notes
+            // pour cela, j'entre dans une boucle for
+            for (int i = 0; i < 11; i++)
+            {
+                id[i]=ligne[i];
+            }
+            identifiant_de_verification=strtod(id,&end);
+            if (fabs(identifiant-identifiant_de_verification)<1)
+            {
+                reussite=1;
+                break;
+            }
+            fclose(fichier);
+        }
+        return reussite;
+    }
+    else if (annee(identifiant)==2)
+    {
+        int reussite=0,nbre=nombre_de_ligne_moyenne2();
+        char ligne[101];
+        double identifiant_de_verification=0;
+        FILE *fichier=fopen("moyenne2.txt","r");
+        if (fichier==NULL)
+        {
+            printf("\nOuverture d'un fichier impossible !");
+            return 2;
+        }
+        
+        for (int i = 0; i < nbre; i++)
+        {
+            fgets(ligne,101,fichier);
+            
+            supprimer_un_caractere_specifique_dans_une_chaine('\n',ligne);
+            char *end=NULL;
+            char id[15];
+            // cette variable id va me permettre de prendre l'identifiant seul etant donne que dans ligne, c l'identifiant et les notes
+            // pour cela, j'entre dans une boucle for
+            for (int i = 0; i < 11; i++)
+            {
+                id[i]=ligne[i];
+            }
+            identifiant_de_verification=strtod(id,&end);
+            if (fabs(identifiant-identifiant_de_verification)<1)
+            {
+                reussite=1;
+                break;
+            }
+            fclose(fichier);
+        }
+        return reussite;
+    }
+    else
+    {
+        exit(0);
+    }
+}

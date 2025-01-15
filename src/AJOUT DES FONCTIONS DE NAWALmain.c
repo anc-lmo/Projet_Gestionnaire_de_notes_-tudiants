@@ -1318,3 +1318,354 @@ int verification_calcul_moyenne(double identifiant)
         exit(0);
     }
 }
+
+
+// A partir de là ce sont les fonctions de Karel
+
+int sauvegarde_etudiant(char *nom, char *prenom,int annee_etude, double identifiant )
+{
+    int reussite=0;
+    FILE *fichier=fopen("donnee.txt","a");
+    FILE *identifiant_file=fopen("identifiant.txt","a");
+    if (fichier==NULL || identifiant_file==NULL)
+    {
+        perror("\nErreur d'ouverture d'un fichier de donnee !");
+        reussite--;
+        return 1;
+    }
+    else
+    {
+        reussite++;
+    }
+    fprintf(fichier,"%s*%s*%d*%.0lf*\n",prenom,nom,annee_etude,identifiant);
+    fprintf(identifiant_file,"%.0lf\n",identifiant);
+    fclose(fichier);
+    fclose(identifiant_file);
+    return reussite;
+}
+const char* matiere1(int numero)
+{
+    switch (numero)
+    {
+        case 1:
+        {
+            return "T.E.E.O." ;
+        }break;
+        case 2:
+        {
+            return "Anglais" ;
+        }break;
+        case 3:
+        {
+            return "Informatique" ;
+        }break;
+        case 4:
+        {
+            return "Communication et emploi" ;
+        }break;
+        case 5:
+        {
+            return "2e L.V. (Allemand/Espagnol)" ;
+        }break;
+        case 6:
+        {
+            return "Maths 2 (Algebre)" ;
+        }break;
+        case 7:
+        {
+            return "Maths 1 (Analyse)" ;
+        }break;
+        case 8:
+        {
+            return "Physiques 1 (Electrocinetique/0ptique)" ;
+        }break;
+        case 9:
+        {
+            return "Physiques 2 (Mecanique)" ;
+        }break;
+        case 10:
+        {
+            return "TP Electronique" ;
+        }break;
+        case 11:
+        {
+            return "Stage et Rapport de Stage" ;
+        }break;
+        case 12:
+        {
+            return "Sciences pour l'Ingenieurs" ;
+        }break;
+        default:
+        {
+            return "Aucune Matiere";
+        }
+    }
+}
+void pause(int milli_seconde)
+{
+    // cette fonction fait une pause de n milliseconde lorsquelle est appele car parfois les resulatats sonts trop brusques a affichees
+    Sleep(milli_seconde);
+}
+const char* matiere2(int numero)
+{
+    switch (numero)
+    {
+        case 1:
+        {
+            return "Relations Internationnales" ;
+        }break;
+        case 2:
+        {
+            return "Anglais" ;
+        }break;
+        case 3:
+        {
+            return "Informatique" ;
+        }break;
+        case 4:
+        {
+            return "2e L.V. (Allemand/Espagnol)" ;
+        }break;
+        case 5:
+        {
+            return "Maths 2" ;
+        }break;
+        case 6:
+        {
+            return "Maths 1" ;
+        }break;
+        case 7:
+        {
+            return "Physiques 1 (Electromagnetisme)" ;
+        }break;
+        case 8:
+        {
+            return "Physiques 2 (Thermodynamique)" ;
+        }break;
+        case 9:
+        {
+            return "Soutenance de stage" ;
+        }break;
+        default:
+        {
+            return "Aucune Matiere";
+        }
+    }
+}
+int coefficient_1(int num_matiere)
+{
+    // cette fonction retourne le coeficient de la matiere en prenant en parametre le numero
+    switch (num_matiere)
+    {
+        case 1:
+        {
+            return 5 ;
+        }break;
+        case 2:
+        {
+            return 10 ;
+        }break;
+        case 3:
+        {
+            return 8 ;
+        }break;
+        case 4:
+        {
+            return 5 ;
+        }break;
+        case 5:
+        {
+            return 3 ;
+        }break;
+        case 6:
+        {
+            return 14 ;
+        }break;
+        case 7:
+        {
+            return 14 ;
+        }break;
+        case 8:
+        {
+            return 13 ;
+        }break;
+        case 9:
+        {
+            return 13 ;
+        }break;
+        case 10:
+        {
+            return 4 ;
+        }break;
+        case 11:
+        {
+            return 6 ;
+        }break;
+        case 12:
+        {
+            return 4 ;
+        }break;
+        default:
+        {
+            return 0;
+        }    
+    }
+}
+int coefficient_2(int num_matiere)
+{
+    // cette fonction retourne le coeficient de la matiere en prenant en parametre le numero
+    switch (num_matiere)
+    {
+        case 1:
+        {
+            return 10 ;
+        }break;
+        case 2:
+        {
+            return 10 ;
+        }break;
+        case 3:
+        {
+            return 8 ;
+        }break;
+        case 4:
+        {
+            return 3 ;
+        }break;
+        case 5:
+        {
+            return 14 ;
+        }break;
+        case 6:
+        {
+            return 14 ;
+        }break;
+        case 7:
+        {
+            return 13 ;
+        }break;
+        case 8:
+        {
+            return 13 ;
+        }break;
+        case 9:
+        {
+            return 10 ;
+        }break;
+        default:
+        {
+            return 0;
+        }
+    }
+}
+double moyenne(double identifiant)
+{
+    // cette fonction prend en parametre un identifiant : retourne la moyenne de l'etudiant si ce dernier a deja ete calcule et retourne -1 sinon
+    double moyenne=0;
+    if (!verification_calcul_moyenne(identifiant))
+    {
+        moyenne=-1;
+    }
+    else
+    {
+        if (annee(identifiant)==1)
+        {
+            FILE *fichier=fopen("moyenne1.txt","r");
+            if (fichier==NULL)
+            {
+                perror("\nErreur d'ouverture d'un fichier !");
+            }
+            char ligne[101];
+            int nbre_line=nombre_de_ligne_moyenne1();
+            for (int i = 0; i < nbre_line; i++)
+            {
+
+                fgets(ligne,101,fichier);
+                char id[15];
+                for (int j = 0; j < 12; j++)
+                {
+                    id[j]=ligne[j];
+                }
+                char *end=NULL;
+                double identifiant_de_verification =strtod(id,&end);
+                if (fabs(identifiant_de_verification-identifiant)<1)
+                {
+                    break;
+                }
+            }
+
+            // passons au debriefing de ligne
+            int len=strlen(ligne);
+            char moy[6];
+            for (int i = 0; i < len; i++)
+            {
+                int k=0;
+                if (ligne[i]=='*')
+                {
+                    for (int j = i+1; j < len ; j++)
+                    {
+                        moy[k]=ligne[j];
+                        k++;
+                    }
+                    break;
+                }
+                
+            }
+            char *end=NULL;
+            moyenne=strtod(moy,&end);
+            fclose(fichier);
+        }
+        else if(annee(identifiant)==2)
+        {
+            FILE *fichier=fopen("moyenne2.txt","r");
+            if (fichier==NULL)
+            {
+                perror("\nErreur d'ouverture d'un fichier !");
+            }
+            char ligne[101];
+            int nbre_line=nombre_de_ligne_moyenne2();
+            for (int i = 0; i < nbre_line; i++)
+            {
+
+                fgets(ligne,101,fichier);
+                char id[15];
+                for (int j = 0; j < 12; j++)
+                {
+                    id[j]=ligne[j];
+                }
+                char *end=NULL;
+                double identifiant_de_verification =strtod(id,&end);
+                if (fabs(identifiant_de_verification-identifiant)<1)
+                {
+                    break;
+                }
+            }
+
+            // passons au debriefing de ligne
+            int len=strlen(ligne);
+            char moy[6];
+            for (int i = 0; i < len; i++)
+            {
+                int k=0;
+                if (ligne[i]=='*')
+                {
+                    for (int j = i+1; j < len ; j++)
+                    {
+                        moy[k]=ligne[j];
+                        k++;
+                    }
+                    break;
+                }
+                
+            }
+            char *end=NULL;
+            moyenne=strtod(moy,&end);
+            fclose(fichier);
+        }
+        else
+        {
+            exit(0);
+        }
+    }
+    return moyenne;
+}

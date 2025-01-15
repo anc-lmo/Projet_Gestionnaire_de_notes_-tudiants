@@ -643,7 +643,7 @@ void lecture_notes(int identifiant,double *tableau_de_notes)
         exit(0);
     }
 }
-
+// a partir d'ici ce sont les fonctions de bachar
 double creation_d_identifiant(char *nom, char *prenom, int annee_etude)
 {
     double identifiant=0;
@@ -956,5 +956,212 @@ void classement()
             printf("\n\t%deme => %s avec %.2lf de moyenne. ",i+1,etudiant,moyenne_id_range_2[i][1]);
         }
     }
+}
+
+// a partir d'ici, ce sont les fonctions de Laurette
+
+int verification_matricule(double identifiant)
+{
+    // cette fonction sert a verifier l'existence d'une matricule(identifiant)
+    // si le matricule est trouve ca retourne 1 si non ca retourne 0;
+    int reussite=0,nbre=nombre_de_ligne_identifiant();
+    char ligne[15];
+    double identifiant_de_verification=0;
+    FILE *fichier=fopen("identifiant.txt","r");
+    if (fichier==NULL)
+    {
+        printf("\nOuverture d'un fichier impossible !");
+        return 2;
+    }
+    
+    for (int i = 0; i < nbre; i++)
+    {
+        fgets(ligne,15,fichier);
+        
+        supprimer_un_caractere_specifique_dans_une_chaine('\n',ligne);
+        char *end=NULL;
+        identifiant_de_verification=strtod(ligne,&end);
+        if (fabs(identifiant-identifiant_de_verification)<1)
+        {
+            reussite=1;
+            break;
+        }
+    }
+    
+    fclose(fichier);
+    return reussite;
+}
+void sauvegarde_des_notes_etudiant(double identifiant)
+{
+    printf("\nSauvegarde des notes : ");
+    // la on aura besoin de l'annee d'etude de l'eleve car les matieres varient en fonction de l'annee 
+    // c pour ca la fonction annee() retourne l'annee en prenant l'identifiant
+    if (annee(identifiant)==1)
+    {
+        double tableau_des_notes[12];
+        int verification=0;
+        do
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                do
+                {
+                    printf("\n\t%s : ",matiere1(i+1));
+                    tableau_des_notes[i]=saisie_securisee_double();
+                    if(tableau_des_notes[i]>20 || tableau_des_notes[i]<0)
+                    {
+                        printf("\nLa note de l'etudiant doit etre comprise entre 0 et 20 (strictement) ! ");
+                    }
+                } while (tableau_des_notes[i]>20 || tableau_des_notes[i]<0);
+            }
+            pause(1000);
+            printf("\nEtes vous sure que vos notes sont les suivantes : ");
+            for ( int i = 0; i < 12; i++)
+            {
+                pause(900);
+                printf("\n\t%s => %.2lf",matiere1(i+1),tableau_des_notes[i]);
+            }
+            printf("\nEntrez (1) pour un oui et (0) pour un non : ");
+            do
+            {
+                printf("\n>>> ");
+                verification=saisie_securisee();
+                if (verification!=1 && verification!=0)
+                {
+                    
+                    printf("\nVous devez entrez entre (1) et (0) !");
+                }
+            } while (verification!=1 && verification!=0);
+            if (verification==0)
+            {
+                printf("\nReprenez alors la saisie des notes !");
+            }
+        } while (verification!=1);
+        // a partir de cette ligne, les notes sont deja dans une variable il reste donc a les enregistre dans le fichier notes.txt
+
+        FILE *fichier_notes=fopen("notes.txt","a");
+        if(fichier_notes==NULL)
+        {
+            perror("\nErreur lors de l'ouverture d'un fichier !\n");
+            exit(0);
+        }
+        fprintf(fichier_notes,"%.0lf*",identifiant);
+        for (int i = 0; i < 12; i++)
+        {
+            fprintf(fichier_notes,"%.2lf*",tableau_des_notes[i]);
+            if(i==11)
+            {
+                fprintf(fichier_notes,"\n");
+            }
+        }
+        printf("\nReussite de l'enregistrement des notes !");
+        fclose(fichier_notes);
+    }
+    else if (annee(identifiant)==2)
+    {
+        double tableau_des_notes[9];
+        int verification=0;
+        do
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                do
+                {
+                    printf("\n\t%s : ",matiere2(i+1));
+                    tableau_des_notes[i]=saisie_securisee_double();
+                    if(tableau_des_notes[i]>20 || tableau_des_notes[i]<0)
+                    {
+                        printf("\nLa note de l'etudiant doit etre comprise entre 0 et 20 (strictement) ! ");
+                    }
+                } while (tableau_des_notes[i]>20 || tableau_des_notes[i]<0);
+            }
+    
+            printf("\nEtes vous sure que vos notes sont les suivantes : ");
+            for ( int i = 0; i < 9; i++)
+            {
+                pause(900);
+                printf("\n\t%s => %.2lf",matiere2(i+1),tableau_des_notes[i]);
+            }
+            printf("\nEntrez (1) pour un oui et (0) pour un non : ");
+            do
+            {
+                printf("\n>>> ");
+                verification=saisie_securisee();
+                if (verification!=1 && verification!=0)
+                {
+                    
+                    printf("\nVous devez entrez entre (1) et (0) !");
+                }
+            } while (verification!=1 && verification!=0);
+            if (verification==0)
+            {
+                printf("\nReprenez alors la saisie des notes !");
+            }
+        } while (verification!=1);
+        // a partir de cette ligne, les notes sont deja dans une variable il reste donc a les enregistre dans le fichier notes.txt
+
+        FILE *fichier_notes=fopen("notes.txt","a");
+        if(fichier_notes==NULL)
+        {
+            perror("\nErreur lors de l'ouverture d'un fichier !\n");
+            exit(0);
+        }
+        fprintf(fichier_notes,"%.0lf*",identifiant);
+        for (int i = 0; i < 9; i++)
+        {
+            fprintf(fichier_notes,"%.2lf*",tableau_des_notes[i]);
+            if(i==8)
+            {
+                fprintf(fichier_notes,"\n");
+            }
+        }
+        printf("\nReussite de l'enregistrement des notes !");
+        fclose(fichier_notes);
+    }
+    else
+    {
+        printf("\nIdentidiant invalide !");
+    }
+}
+int annee(double identifiant)
+{
+    if ((int)(identifiant/1000000000)==2)
+    {
+        return 2;
+    }
+    else if ((int)(identifiant/1000000000)==1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
+void pause(int milli_seconde)
+{
+    // cette fonction fait une pause de n milliseconde lorsquelle est appele car parfois les resulatats sonts trop brusques a affichees
+    Sleep(milli_seconde);
+}
+int nombre_de_ligne_notes()
+{
+    int nbre=0;
+    FILE *fichier=fopen("notes.txt","r");
+    if (fichier==NULL)
+    {
+        perror("\nOuverture lors de l'ouverture d'un fichier !");
+        return 1;
+    }
+    char caractere_de_comptage=0;
+    do
+    {
+        caractere_de_comptage=getc(fichier);
+        if (caractere_de_comptage=='\n')
+        {
+            nbre++;
+        }
+    } while (caractere_de_comptage!=EOF);
+    fclose(fichier);
+    return nbre;
 }
 
